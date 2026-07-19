@@ -16,6 +16,7 @@ Built on Alibaba Cloud's Qwen model family. Running on 103M tokens of free quota
 |-----------|----------|-------------|
 | [**transcriber**](https://github.com/reverberage/transcriber) | audio → text | AI-powered audio/video transcription |
 | [**verify**](https://github.com/reverberage/verify) | text → text | Claim verification engine |
+| [**transform**](https://github.com/reverberage/transform) | text → text | General-purpose text transformation |
 
 ### Infrastructure
 
@@ -28,7 +29,6 @@ Built on Alibaba Cloud's Qwen model family. Running on 103M tokens of free quota
 
 | Phase | Satellite | Model | Status |
 |-------|-----------|-------|--------|
-| Tier 1 | **transform** | qwen3-coder-plus | planned |
 | Tier 1 | **see** | qwen3.7-plus | planned |
 | Tier 1 | **hear** | qwen3.5-omni-plus | planned |
 | Tier 1 | **speak** | cosyvoice-v3.5-plus | planned |
@@ -42,19 +42,20 @@ See the full [roadmap](https://github.com/reverberage/hub/blob/main/docs/roadmap
 ## Getting started
 
 ```bash
-pip install rvrb-transcriber rvrb-verify
+pip install rvrb-transcriber rvrb-verify rvrb-transform
 ```
 
 **Standalone:**
 ```bash
 rvrb-transcriber audio.mp3
 rvrb-verify "The sky is blue"
+rvrb-transform "uppercase" "hello world"
 ```
 
 **Composed pipeline:**
 ```bash
-# Transcribe a meeting, then verify every claim in the transcript
-rvrb-transcriber meeting.mp3 | rvrb-verify
+# Transcribe a meeting, verify every claim, then transform to meeting minutes
+rvrb-transcriber meeting.mp3 | rvrb-verify | rvrb-transform "format as meeting minutes"
 ```
 
 Each satellite follows the [Satellite Protocol v2](https://github.com/reverberage/hub/blob/main/docs/satellite-protocol-v2.md) — hatchling build, typer CLI, Pydantic v2 models, MCP-native, Python 3.11+.
