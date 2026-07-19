@@ -1,6 +1,6 @@
 # reverberage
 
-Composable, MCP-native AI toolkits for text, audio, image, and video. Build pipelines. Not monoliths.
+Composable, MCP-native AI toolkits for audio, video, and text. Build pipelines. Not monoliths.
 
 ## What is reverberage?
 
@@ -10,12 +10,19 @@ Built on Alibaba Cloud's Qwen model family. Running on 103M tokens of free quota
 
 ## Repositories
 
+### Satellites
+
 | Satellite | Modality | What it does |
 |-----------|----------|-------------|
-| [**hub**](https://github.com/reverberage/hub) | meta | Docs, roadmap, scaffold scripts, orchestration |
-| [**n3rverberage**](https://github.com/reverberage/n3rverberage) | engine | Provider abstraction, MCP servers, A2A hub, memory |
 | [**transcriber**](https://github.com/reverberage/transcriber) | audio → text | AI-powered audio/video transcription |
 | [**verify**](https://github.com/reverberage/verify) | text → text | Claim verification engine |
+
+### Infrastructure
+
+| Repo | Type | What it does |
+|------|------|-------------|
+| [**hub**](https://github.com/reverberage/hub) | governance | Protocol specs, roadmap, orchestration tooling |
+| [**n3rverberage**](https://github.com/reverberage/n3rverberage) | engine | Provider abstraction, MCP servers, A2A hub, memory — internal harness, not a satellite |
 
 ## Roadmap
 
@@ -35,8 +42,19 @@ See the full [roadmap](https://github.com/reverberage/hub/blob/main/docs/roadmap
 ## Getting started
 
 ```bash
-pip install rvrb-transcriber
+pip install rvrb-transcriber rvrb-verify
+```
+
+**Standalone:**
+```bash
 rvrb-transcriber audio.mp3
+rvrb-verify "The sky is blue"
+```
+
+**Composed pipeline:**
+```bash
+# Transcribe a meeting, then verify every claim in the transcript
+rvrb-transcriber meeting.mp3 | rvrb-verify
 ```
 
 Each satellite follows the [Satellite Protocol v2](https://github.com/reverberage/hub/blob/main/docs/satellite-protocol-v2.md) — hatchling build, typer CLI, Pydantic v2 models, MCP-native, Python 3.11+.
