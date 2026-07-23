@@ -1,0 +1,2 @@
+- [Home](Home)
+- [sync-wiki Action](sync-wiki)
