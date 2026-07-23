@@ -8,7 +8,7 @@ inputs:
     default: ${{ github.token }}
   path:
     description: 'Path to directory containing markdown files'
-    required: false
+    required: true
     default: docs
   author-name:
     description: 'Git author name for wiki commits'
