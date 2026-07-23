@@ -1,0 +1,68 @@
+name: 'Sync Wiki'
+description: 'Sync a docs directory to the repository GitHub wiki via git push'
+
+inputs:
+  token:
+    description: 'GitHub token with repo permissions'
+    required: true
+    default: ${{ github.token }}
+  path:
+    description: 'Path to directory containing markdown files'
+    required: false
+    default: docs
+  author-name:
+    description: 'Git author name for wiki commits'
+    required: false
+    default: 'github-actions[bot]'
+  author-email:
+    description: 'Git author email for wiki commits'
+    required: false
+    default: '41898282+github-actions[bot]@users.noreply.github.com'
+
+runs:
+  using: composite
+  steps:
+    - name: Check wiki repo accessibility
+      shell: bash
+      run: |
+        git ls-remote "https://x:${{ inputs.token }}@github.com/${{ github.repository }}.wiki.git" HEAD > /dev/null 2>&1 || {
+          echo "::error::Wiki repo not accessible. Ensure the wiki has at least one page created."
+          echo "::error::Visit https://github.com/${{ github.repository }}/wiki to create the first page."
+          exit 1
+        }
+
+    - name: Clone wiki and sync content
+      shell: bash
+      run: |
+        CLONE_DIR="/tmp/wiki-sync-${{ github.run_id }}"
+        rm -rf "$CLONE_DIR"
+
+        echo "Cloning wiki repo..."
+        git clone "https://x:${{ inputs.token }}@github.com/${{ github.repository }}.wiki.git" "$CLONE_DIR" --depth 1
+
+        echo "Removing old files (preserving .git)..."
+        find "$CLONE_DIR" -maxdepth 1 -type f ! -name '.*' -delete
+
+        echo "Copying markdown files from ${{ inputs.path }}..."
+        if [ -d "${{ inputs.path }}" ]; then
+          cp "${{ inputs.path }}"/*.md "$CLONE_DIR/" 2>/dev/null || echo "No .md files found in ${{ inputs.path }}"
+        else
+          echo "Directory ${{ inputs.path }} does not exist — nothing to sync."
+          exit 0
+        fi
+
+        cd "$CLONE_DIR"
+
+        git config user.name "${{ inputs.author-name }}"
+        git config user.email "${{ inputs.author-email }}"
+
+        git add -A
+        if git diff --staged --quiet; then
+          echo "No changes to sync."
+          exit 0
+        fi
+
+        git commit -m "docs: sync wiki [skip ci]"
+        echo "Pushing to wiki..."
+        git push origin master
+        echo "Wiki sync complete."
